@@ -14,13 +14,13 @@ public class ProfileServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserDto user = (UserDto) req.getSession().getAttribute("user");
-        if (user == null) {
-            // Not logged in -- redirect to login page
-            resp.sendRedirect("/login");
-            return;
-        }
-        req.setAttribute("user", user);
+//        UserDto user = (UserDto) req.getSession().getAttribute("user");
+//        if (user == null) {
+//            // Not logged in -- redirect to login page
+//            resp.sendRedirect("/login");
+//            return;
+//        }
+//        req.setAttribute("user", user);
         req.getRequestDispatcher("WEB-INF/views/profile.jsp").forward(req, resp);
     }
 }

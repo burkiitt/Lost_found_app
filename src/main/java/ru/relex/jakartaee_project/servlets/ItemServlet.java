@@ -27,6 +27,7 @@ public class ItemServlet extends HttpServlet {
 
         out.println("<html><head><title>Items Test</title></head><body>");
         out.println("<h2>TEST ITEMS OUTPUT</h2>");
+        out.println("<a href=\"/profile\">Личный кабинет</a>");
         out.println("<ul style='list-style:none;'>");
 
         for (ItemDto item : items) {
