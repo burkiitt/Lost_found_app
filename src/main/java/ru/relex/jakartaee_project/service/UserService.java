@@ -36,7 +36,10 @@ public class UserService {
     }
 
     public UserDto login(String email, String password) {
-        var user = userDao.findByEmail(email);
-        return userMapper.mapFrom(user);
+        if(email == null || email.isBlank() || password == null || password.isBlank()) {
+            return null; // Or throw a custom exception if you want to distinguish reasons
+        }
+        var user = userDao.findByEmailPassword(email, password);
+        return user != null ? userMapper.mapFrom(user) : null;
     }
 }

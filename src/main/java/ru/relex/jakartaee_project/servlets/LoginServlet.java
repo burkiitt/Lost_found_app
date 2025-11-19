@@ -23,12 +23,18 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserDto userDto =userService.login(req.getParameter("email"),req.getParameter("password"));
-        if(userDto != null) {
-            onLoginSuccess(userDto,req,resp);
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
+        if(email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            // Pass an error code for empty fields
+            resp.sendRedirect("/login?error=empty&email=" + email);
+            return;
         }
-        else{
-            onLoginFail(req,resp);
+        UserDto userDto = userService.login(email, password);
+        if(userDto != null) {
+            onLoginSuccess(userDto, req, resp);
+        } else {
+            resp.sendRedirect("/login?error=invalid&email=" + email);
         }
 
     }
@@ -36,9 +42,5 @@ public class LoginServlet extends HttpServlet {
     private void onLoginSuccess(UserDto userDto, HttpServletRequest req, HttpServletResponse resp) {
         req.getSession().setAttribute("user", userDto);
         resp.sendRedirect("/items");
-    }
-    @SneakyThrows
-    private void onLoginFail(HttpServletRequest req, HttpServletResponse resp) {
-        resp.sendRedirect("/login?error&email="+req.getParameter("email"));
     }
 }

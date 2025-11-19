@@ -21,7 +21,7 @@
             <input  type="text" name="email" id="email">
         </label><br>
         <label for="password">Password:
-            <input  type="text" name="password" id="password">
+            <input  type="password" name="password" id="password">
         </label><br>
         <input type="submit" value="Send">
         <c:if test="${not empty errors}">
