@@ -4,6 +4,7 @@
 <html>
 <head><title>Items</title></head>
 <body>
+<%@include file="header.jsp"%>
 <h2>Items list</h2>
 
 <c:forEach var="item" items="${items}">
