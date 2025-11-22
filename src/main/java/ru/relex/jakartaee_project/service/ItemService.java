@@ -11,6 +11,7 @@ import ru.relex.jakartaee_project.entity.Image;
 import ru.relex.jakartaee_project.entity.Item;
 import ru.relex.jakartaee_project.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,5 +53,11 @@ public class ItemService {
                 category,
                 images
         );
+    }
+    public long createItem(long userId, long categoryId, String type,
+                           String title, String desc, String location,
+                           LocalDateTime eventDate) {
+        Item item = new Item(userId, categoryId, type, title, desc, location, eventDate);
+        return itemDao.save_return_id(item);
     }
 }

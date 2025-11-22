@@ -45,6 +45,24 @@ public class ImageDao {
             throw new RuntimeException(e);
         }
     }
+    public Long save_return_id(Image image) {
+        try (Connection connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            statement.setLong(1, image.getItem_id());
+            statement.setString(2, image.getUrl());
+            statement.executeUpdate();
+
+            ResultSet rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getLong("id");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1L;
+    }
 
     public List<Image> findByItemID(Long itemId) {
         try (Connection connection = ConnectionManager.get();

@@ -24,9 +24,14 @@ public class CategoryDao {
             SELECT id, name FROM categories
             """;
 
+    private final String FIND_ALL_STRING = "SELECT name FROM categories ORDER BY name";
+
+
     private final String FIND_BY_ID_SQL = FIND_ALL_SQL + " WHERE id = ?";
 
     private final String DELETE_SQL = "DELETE FROM categories WHERE id = ?";
+
+private final String FIND_ID_BY_NAME_SQL = "SELECT id FROM categories WHERE name = ?";
 
     public Category save(Category category) {
         try (Connection connection = ConnectionManager.get();
@@ -93,5 +98,34 @@ public class CategoryDao {
                 rs.getLong("id"),
                 rs.getString("name")
         );
+    }
+
+    public List<String> findAllNames() {
+        List<String> list = new ArrayList<>();
+
+        try (Connection con = ConnectionManager.get();
+             PreparedStatement ps = con.prepareStatement(FIND_ALL_STRING)) {
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(rs.getString("name"));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public long findIdByName(String name) {
+        try(
+                Connection connection = ConnectionManager.get();
+                PreparedStatement ps = connection.prepareStatement(FIND_ID_BY_NAME_SQL)
+                ){
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getLong("id");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
     }
 }

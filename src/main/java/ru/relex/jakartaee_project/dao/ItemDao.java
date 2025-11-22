@@ -13,6 +13,7 @@ public class ItemDao {
     public static ItemDao getInstance() {
         return instance;
     }
+
     String save_SQL = """
             insert into items(user_id, category_id , type ,title, description,location,event_date )
             values (?,?,?,?,?,?,?)
@@ -53,6 +54,29 @@ public class ItemDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public Long save_return_id (Item item) {
+        try(Connection connection = ConnectionManager.get();
+            var statement = connection.prepareStatement(save_SQL,Statement.RETURN_GENERATED_KEYS);
+        ){
+            statement.setLong(1, item.getUser_id());
+            statement.setLong(2, item.getCategory_id());
+            statement.setString(3, item.getType());
+            statement.setString(4, item.getTitle());
+            statement.setString(5, item.getDescription());
+            statement.setString(6, item.getLocation());
+            statement.setTimestamp(7, Timestamp.valueOf(item.getEvent_date()));
+
+            statement.executeUpdate();
+
+            ResultSet rs = statement.getGeneratedKeys();
+            if(rs.next()) {
+                return rs.getLong("id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1L;
     }
     public boolean delete (Long id) {
         try(
