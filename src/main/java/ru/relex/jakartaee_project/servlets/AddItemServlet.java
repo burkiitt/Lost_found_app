@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import ru.relex.jakartaee_project.dao.CategoryDao;
 import ru.relex.jakartaee_project.service.CategoryService;
 import ru.relex.jakartaee_project.service.ImageService;
 import ru.relex.jakartaee_project.service.ItemService;
@@ -28,10 +29,24 @@ public class AddItemServlet extends HttpServlet {
     private final CategoryService categoryService = CategoryService.getInstance();
     private final ImageService imageService = ImageService.getInstance();
 
+
+    private final CategoryDao categoryDao = CategoryDao.getInstance();
+
+    private static final String UPLOAD_DIR =
+            "D:/idea_java_projects/JakartaEE_project/uploads";
+
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<String> categories = categoryDao.findAllNames();
+        req.setAttribute("categories", categories);
         req.getRequestDispatcher("/WEB-INF/views/add_item.jsp").forward(req, resp);
 
+    }
+    private String getExtension(Part part) {
+        String submitted = part.getSubmittedFileName();
+        int dotIndex = submitted.lastIndexOf('.');
+        return (dotIndex == -1) ? "" : submitted.substring(dotIndex);
     }
 
     @Override
@@ -75,22 +90,25 @@ public class AddItemServlet extends HttpServlet {
             return;
         }
 
-        String uploadDirPath = getServletContext().getRealPath("/images/" + itemId + "/");
+        String uploadDirPath = UPLOAD_DIR + "/" + itemId + "/";
         File uploadDir = new File(uploadDirPath);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
         int counter = 1;
         for (Part part : images) {
 
-            String filename = "img" + counter + ".jpeg";
-            File file = new File(uploadDir, filename);
+            String ext = getExtension(part);  // .jpg / .png / .jpeg
+            String filename = "img" + counter + ext;
 
+            File file = new File(uploadDir, filename);
             part.write(file.getAbsolutePath());
 
+            // image_url = only filename
             imageService.saveImage(itemId, filename);
 
             counter++;
         }
+
 
         resp.sendRedirect(req.getContextPath() + "/items");
     }

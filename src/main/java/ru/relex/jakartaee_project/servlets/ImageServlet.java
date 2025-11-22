@@ -15,6 +15,8 @@ public class ImageServlet extends HttpServlet {
     // Папка, куда ты сохраняешь фото
     private static final String UPLOAD_DIR = "D:/idea_java_projects/JakartaEE_project/uploads";
 
+
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
