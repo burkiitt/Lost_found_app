@@ -160,14 +160,25 @@ public class ItemDao {
     }
     public List<Item> searchItems(String name, String category, String type, String dateFrom, String dateTo) {
         List<Item> items = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM items WHERE 1=1");
+        StringBuilder sql = new StringBuilder("""
+            SELECT i.id, i.user_id, i.category_id, i.type, i.title, i.description, 
+                   i.location, i.event_date, i.status, i.created_at 
+            FROM items i
+            """);
+        
+        // Add JOIN for category search if needed
+        if (category != null && !category.isEmpty()) {
+            sql.append(" JOIN categories c ON i.category_id = c.id");
+        }
+        
+        sql.append(" WHERE 1=1");
 
         // Динамическое добавление условий
-        if (name != null && !name.isEmpty()) sql.append(" AND title ILIKE ?");
-        if (category != null && !category.isEmpty()) sql.append(" AND category = ?");
-        if (type != null && !type.isEmpty()) sql.append(" AND type = ?");
-        if (dateFrom != null && !dateFrom.isEmpty()) sql.append(" AND date_created >= ?");
-        if (dateTo != null && !dateTo.isEmpty()) sql.append(" AND date_created <= ?");
+        if (name != null && !name.isEmpty()) sql.append(" AND i.title ILIKE ?");
+        if (category != null && !category.isEmpty()) sql.append(" AND c.name = ?");
+        if (type != null && !type.isEmpty()) sql.append(" AND i.type = ?");
+        if (dateFrom != null && !dateFrom.isEmpty()) sql.append(" AND i.event_date >= ?");
+        if (dateTo != null && !dateTo.isEmpty()) sql.append(" AND i.event_date <= ?");
 
         try (Connection conn = ConnectionManager.get();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -176,8 +187,12 @@ public class ItemDao {
             if (name != null && !name.isEmpty()) ps.setString(index++, "%" + name + "%");
             if (category != null && !category.isEmpty()) ps.setString(index++, category);
             if (type != null && !type.isEmpty()) ps.setString(index++, type);
-            if (dateFrom != null && !dateFrom.isEmpty()) ps.setDate(index++, java.sql.Date.valueOf(dateFrom));
-            if (dateTo != null && !dateTo.isEmpty()) ps.setDate(index++, java.sql.Date.valueOf(dateTo));
+            if (dateFrom != null && !dateFrom.isEmpty()) {
+                ps.setTimestamp(index++, Timestamp.valueOf(java.time.LocalDate.parse(dateFrom).atStartOfDay()));
+            }
+            if (dateTo != null && !dateTo.isEmpty()) {
+                ps.setTimestamp(index++, Timestamp.valueOf(java.time.LocalDate.parse(dateTo).atTime(23, 59, 59)));
+            }
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

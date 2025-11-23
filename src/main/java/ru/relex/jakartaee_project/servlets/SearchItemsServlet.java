@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import ru.relex.jakartaee_project.dao.CategoryDao;
 import ru.relex.jakartaee_project.dao.ItemDao;
 import ru.relex.jakartaee_project.dto.ItemDto;
 import ru.relex.jakartaee_project.service.ItemService;
@@ -16,6 +17,7 @@ import java.util.List;
 public class SearchItemsServlet extends HttpServlet {
 
     ItemService itemService = ItemService.getInstance();
+    private final CategoryDao categoryDao = CategoryDao.getInstance();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -29,8 +31,10 @@ public class SearchItemsServlet extends HttpServlet {
 
 
         List<ItemDto> items = itemService.searchItems(name, category, type, dateFrom, dateTo);
+        List<String> categories = categoryDao.findAllNames();
 
         request.setAttribute("items", items);
+        request.setAttribute("categories", categories);
         request.getRequestDispatcher("WEB-INF/views/items.jsp").forward(request, response);
     }
 }

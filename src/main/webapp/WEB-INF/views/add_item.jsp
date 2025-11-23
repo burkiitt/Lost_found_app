@@ -5,13 +5,22 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Add Item</title>
+    <title>Add Item - Lost&Found</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/add_item.css">
 </head>
 <body>
-
+<header>
+    <h1>Lost&Found</h1>
+    <div class="header-links">
+        <a href="${pageContext.request.contextPath}/items">Все вещи</a>
+        <a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
+    </div>
+</header>
+<div class="add-item-container">
 <form action="${pageContext.request.contextPath}/addItem"
       method="post"
       enctype="multipart/form-data">
+    <h2>Add New Item</h2>
 
     <label>Type:</label>
     <select name="type" required>
@@ -40,9 +49,10 @@
 
     <label>Images (max 3):</label>
     <input type="file" name="images" accept="image/*" multiple>
+    <div class="file-hint">You can upload up to 3 images</div>
 
     <button type="submit">Add Item</button>
 </form>
-
+</div>
 </body>
 </html>

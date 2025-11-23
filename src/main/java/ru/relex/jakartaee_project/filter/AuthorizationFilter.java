@@ -15,6 +15,7 @@ public class AuthorizationFilter implements Filter {
             "/login",
             "/registration",
             "/css",          // если есть статика
+            "/style",        // CSS files directory
             "/js",
             "/images"
     );

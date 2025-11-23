@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Список вещей - Lost&Found</title>
-    <link rel="stylesheet" href="style/items.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/items.css">
 </head>
 <body>
 <!-- Header -->
@@ -27,6 +27,7 @@
 
     <label>Category:</label>
     <select name="category_name">
+        <option value="">Все категории</option>
         <c:forEach var="cat" items="${categories}">
             <option value="${cat}">${cat}</option>
         </c:forEach>

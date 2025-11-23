@@ -7,17 +7,20 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Login!!!</title>
+    <title>Login - Lost&Found</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/login.css">
 </head>
 <body>
+<div class="login-container">
 <form action="/login" method="post">
+    <h2>Welcome Back</h2>
     <label for="email">
         Email:
         <input type="text" name="email" id="email" value="${param.email != null ? param.email : ''}" />
     </label>
 
     <c:if test="${param.error == 'empty'}">
-        <span style="color: red">Email and password are required</span>
+        <div class="error-message">Email and password are required</div>
     </c:if>
 
     <br />
@@ -29,14 +32,15 @@
 
     <br />
 
-    <button type="submit">Login</button>
-    <a href="/registration"><button type="button">Register</button></a>
+    <div class="button-group">
+        <button type="submit">Login</button>
+        <a href="/registration"><button type="button">Register</button></a>
+    </div>
 
     <c:if test="${param.error == 'invalid'}">
-        <div style="color: red">
-            <span>Email or password incorrect</span>
-        </div>
+        <div class="error-message">Email or password incorrect</div>
     </c:if>
 </form>
+</div>
 </body>
 </html>

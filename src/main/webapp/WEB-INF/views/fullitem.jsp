@@ -4,41 +4,62 @@
 
 <html>
 <head>
-    <title>Item Details</title>
-    <style>
-        .container {
-            width: 700px;
-            margin: 20px auto;
-            font-family: Arial, sans-serif;
-        }
-        .images img {
-            width: 250px;
-            margin: 10px;
-        }
-        .back {
-            margin-top: 20px;
-            display: inline-block;
-        }
-    </style>
+    <title>Item Details - Lost&Found</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/fullitem.css">
 </head>
 <body>
-
-<div class="container">
+<header>
+    <h1>Lost&Found</h1>
+    <div class="header-links">
+        <a href="${pageContext.request.contextPath}/items">Все вещи</a>
+        <a href="${pageContext.request.contextPath}/addItem">Добавить вещь</a>
+        <a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
+    </div>
+</header>
+<div class="item-details-container">
+    <div class="item-details-card">
 
     <%
         FullItemDto item = (FullItemDto) request.getAttribute("item");
     %>
 
-    <h2><%= item.title() %></h2>
+        <div class="item-header">
+            <h2><%= item.title() %></h2>
+        </div>
 
-    <p><b>Description:</b> <%= item.description() %></p>
-    <p><b>Location:</b> <%= item.location() %></p>
-    <p><b>Event Date:</b> <%= item.eventDate() %></p>
-    <p><b>Status:</b> <%= item.status() %></p>
-    <p><b>User:</b> <%= item.user().getName() %></p>
-    <p><b>Category:</b> <%= item.category().getName() %></p>
+        <div class="item-info">
+            <div class="info-row">
+                <b>Description:</b>
+                <span><%= item.description() %></span>
+            </div>
+            <div class="info-row">
+                <b>Location:</b>
+                <span><%= item.location() %></span>
+            </div>
+            <div class="info-row">
+                <b>Event Date:</b>
+                <span><%= item.eventDate() %></span>
+            </div>
+            <div class="info-row">
+                <b>Status:</b>
+                <span><span class="status-badge <%= item.status().equals("active") ? "active" : "inactive" %>"><%= item.status() %></span></span>
+            </div>
+            <div class="info-row">
+                <b>User:</b>
+                <span><%= item.user().getName() %></span>
+            </div>
+            <div class="info-row">
+                <b>User's email:</b>
+                <span><%= item.user().getEmail() %></span>
+            </div>
+            <div class="info-row">
+                <b>Category:</b>
+                <span><%= item.category().getName() %></span>
+            </div>
+        </div>
 
-    <h3>Images:</h3>
+        <div class="images-section">
+            <h3>Images</h3>
     <div class="images">
         <%
             for (Image img : item.images()) {
@@ -49,8 +70,8 @@
         %>
     </div>
 
-    <a class="back" href="<%= request.getContextPath() %>/items">← Back to Items</a>
-
+        <a class="back-link" href="<%= request.getContextPath() %>/items">← Back to Items</a>
+    </div>
 </div>
 
 </body>

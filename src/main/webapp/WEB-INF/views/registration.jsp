@@ -7,11 +7,13 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>registr please</title>
-    <link rel="stylesheet" href="style/registration.css">
+    <title>Registration - Lost&Found</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/registration.css">
 </head>
 <body>
+<div class="registration-container">
 <form action="/registration" method="post">
+    <h2>Create Account</h2>
     <label for="name">
         Name:
         <input type="text" name="name" id="name" />
@@ -33,12 +35,15 @@
     <input type="submit" value="Send" />
 
     <c:if test="${not empty errors}">
-        <ul style="color:red">
-            <c:forEach var="err" items="${errors}">
-                <li>${err.message}</li>
-            </c:forEach>
-        </ul>
+        <div class="error-message">
+            <ul>
+                <c:forEach var="err" items="${errors}">
+                    <li>${err.message}</li>
+                </c:forEach>
+            </ul>
+        </div>
     </c:if>
 </form>
+</div>
 </body>
 </html>
