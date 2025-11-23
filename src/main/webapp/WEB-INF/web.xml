@@ -3,44 +3,4 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
-    <servlet>
-        <servlet-name>Jsp</servlet-name>
-        <jsp-file>/firstJsp.jsp</jsp-file>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Jsp</servlet-name>
-        <url-pattern>/jsp</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>setCookies</servlet-name>
-        <servlet-class>ru.relex.jakartaee_project.SetCookiesServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>setCookies</servlet-name>
-        <url-pattern>/set-cookies</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>getCookies</servlet-name>
-        <servlet-class>ru.relex.jakartaee_project.GetCookiesServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>getCookies</servlet-name>
-        <url-pattern>/get-cookies</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>deleteCookies</servlet-name>
-        <servlet-class>ru.relex.jakartaee_project.DeleteCookiesServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>deleteCookies</servlet-name>
-        <url-pattern>/delete-cookies</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>LibraryServlet</servlet-name>
-        <servlet-class>ru.relex.jakartaee_project.LibraryServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LibraryServlet</servlet-name>
-        <url-pattern>/library</url-pattern>
-    </servlet-mapping>
 </web-app>
