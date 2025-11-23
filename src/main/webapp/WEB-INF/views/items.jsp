@@ -1,36 +1,50 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="ru.relex.jakartaee_project.dto.ItemDto" %>
 <%@ page import="ru.relex.jakartaee_project.entity.Image" %>
+<%@ page import="ru.relex.jakartaee_project.dto.ItemDto" %>
 <%@ page import="java.util.List" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <title>Items</title>
-    <style>
-        .item-card {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px;
-            list-style: none;
-        }
-        .item-images img {
-            width: 200px;
-            margin: 5px;
-        }
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>Список вещей - Lost&Found</title>
+    <link rel="stylesheet" href="style/items.css">
 </head>
 <body>
+<!-- Header -->
+<header>
+    <h1>Lost&Found</h1>
+    <div class="header-links">
+        <a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
+        <a href="${pageContext.request.contextPath}/addItem">Добавить вещь</a>
+    </div>
+</header>
 
-<h2>Items List</h2>
+<!-- Search bar -->
+<form class="search-bar" method="get" action="SearchItemsServlet">
+    <input type="text" name="name" placeholder="Введите имя вещи"/>
 
-<a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
+    <label>Category:</label>
+    <select name="category_name">
+        <option value="">Все категории</option>
+        <c:forEach var="cat" items="${categories}">
+            <option value="${cat}">${cat}</option>
+        </c:forEach>
+    </select>
 
-<a href="${pageContext.request.contextPath}/addItem">add item</a>
+    <select name="type">
+        <option value="">Все типы</option>
+        <option value="lost">Lost</option>
+        <option value="found">Found</option>
+    </select>
 
+    <input type="date" name="dateFrom"/>
+    <input type="date" name="dateTo"/>
+    <input type="submit" value="Поиск"/>
+</form>
+
+<!-- Items list -->
 <ul>
     <%
         List<ItemDto> items = (List<ItemDto>) request.getAttribute("items");
@@ -47,7 +61,7 @@
                 <%
                     for (Image img : item.images()) {
                 %>
-                <img src="<%= img.getUrl() %>" alt="Item image">
+                <img src="<%= request.getContextPath() %>/images/<%= item.id() %>/<%= img.getUrl() %>" alt="Item image">
                 <%
                     }
                 %>
@@ -59,6 +73,5 @@
         }
     %>
 </ul>
-
 </body>
 </html>

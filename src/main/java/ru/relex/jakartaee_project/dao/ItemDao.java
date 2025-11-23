@@ -1,5 +1,7 @@
 package ru.relex.jakartaee_project.dao;
 
+import ru.relex.jakartaee_project.dto.ItemDto;
+import ru.relex.jakartaee_project.entity.Image;
 import ru.relex.jakartaee_project.entity.Item;
 import ru.relex.jakartaee_project.utils.ConnectionManager;
 
@@ -9,6 +11,7 @@ import java.util.List;
 
 public class ItemDao {
     private static final ItemDao instance = new ItemDao();
+    public static final ImageDao imageDao = ImageDao.getInstance();
     private ItemDao() {}
     public static ItemDao getInstance() {
         return instance;
@@ -154,5 +157,37 @@ public class ItemDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public List<Item> searchItems(String name, String category, String type, String dateFrom, String dateTo) {
+        List<Item> items = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM items WHERE 1=1");
+
+        // Динамическое добавление условий
+        if (name != null && !name.isEmpty()) sql.append(" AND title ILIKE ?");
+        if (category != null && !category.isEmpty()) sql.append(" AND category = ?");
+        if (type != null && !type.isEmpty()) sql.append(" AND type = ?");
+        if (dateFrom != null && !dateFrom.isEmpty()) sql.append(" AND date_created >= ?");
+        if (dateTo != null && !dateTo.isEmpty()) sql.append(" AND date_created <= ?");
+
+        try (Connection conn = ConnectionManager.get();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int index = 1;
+            if (name != null && !name.isEmpty()) ps.setString(index++, "%" + name + "%");
+            if (category != null && !category.isEmpty()) ps.setString(index++, category);
+            if (type != null && !type.isEmpty()) ps.setString(index++, type);
+            if (dateFrom != null && !dateFrom.isEmpty()) ps.setDate(index++, java.sql.Date.valueOf(dateFrom));
+            if (dateTo != null && !dateTo.isEmpty()) ps.setDate(index++, java.sql.Date.valueOf(dateTo));
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                items.add(buildItem(rs));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return items;
     }
 }

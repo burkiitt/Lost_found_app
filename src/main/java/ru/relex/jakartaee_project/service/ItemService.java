@@ -34,6 +34,13 @@ public class ItemService {
                         item.getDescription(),
                         imageDao.findByItemID(item.getId()))).collect(Collectors.toList());
     }
+    public List<ItemDto> searchItems(String name, String category, String type, String dateFrom, String dateTo) {
+        return itemDao.searchItems(name, category, type, dateFrom, dateTo).stream().map(item ->
+                new ItemDto(item.getId(), item.getTitle(),
+                        item.getDescription(),
+                        imageDao.findByItemID(item.getId()))).collect(Collectors.toList());
+    }
+
     public FullItemDto findByIdFull(long id) {
         Item item = itemDao.findById(id);
         if (item == null) return null;

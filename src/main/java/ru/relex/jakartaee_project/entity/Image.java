@@ -40,7 +40,7 @@ public class Image {
     }
 
     public String getUrl() {
-        return "/images/"+item_id+"/"+url;
+        return url;
     }
     public void setUrl(String url) {
         this.url = url;

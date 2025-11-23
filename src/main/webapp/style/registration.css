@@ -1,0 +1,76 @@
+/* === Общие стили === */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* === Контейнер формы === */
+.form-container {
+    background: white;
+    width: 360px;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Заголовок */
+.form-container h2 {
+    margin-top: 0;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* === Поля === */
+.form-container label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccd0d5;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+}
+
+.form-container input:focus {
+    border-color: #4d8bf5;
+}
+
+/* === Кнопка === */
+.form-container input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #4d8bf5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.form-container input[type="submit"]:hover {
+    background-color: #3c74d7;
+}
+
+/* === Ошибки === */
+.error-list {
+    margin-top: 15px;
+    padding-left: 20px;
+    color: #d9534f;
+}

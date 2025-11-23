@@ -35,15 +35,15 @@
     <p><b>Location:</b> <%= item.location() %></p>
     <p><b>Event Date:</b> <%= item.eventDate() %></p>
     <p><b>Status:</b> <%= item.status() %></p>
-    <p><b>User:</b> <%= item.user() %></p>
-    <p><b>Category:</b> <%= item.category() %></p>
+    <p><b>User:</b> <%= item.user().getName() %></p>
+    <p><b>Category:</b> <%= item.category().getName() %></p>
 
     <h3>Images:</h3>
     <div class="images">
         <%
             for (Image img : item.images()) {
         %>
-        <img src="<%= img.getUrl() %>" alt="Item image">
+        <img src="<%= request.getContextPath() %>/images/<%= item.id() %>/<%= img.getUrl() %>" alt="Item image">
         <%
             }
         %>
