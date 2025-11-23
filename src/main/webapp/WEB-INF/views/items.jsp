@@ -27,7 +27,6 @@
 
     <label>Category:</label>
     <select name="category_name">
-        <option value="">Все категории</option>
         <c:forEach var="cat" items="${categories}">
             <option value="${cat}">${cat}</option>
         </c:forEach>
