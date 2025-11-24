@@ -12,6 +12,7 @@ import ru.relex.jakartaee_project.entity.Item;
 import ru.relex.jakartaee_project.entity.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,4 +68,19 @@ public class ItemService {
         Item item = new Item(userId, categoryId, type, title, desc, location, eventDate);
         return itemDao.save_return_id(item);
     }
+
+    public List<ItemDto> findItemsByUserId(Long id) {
+        return itemDao.itemsByUserId(id).stream().map(item ->
+                new ItemDto(item.getId(), item.getTitle(),
+                        item.getDescription(),
+                        imageDao.findByItemID(item.getId()))).collect(Collectors.toList());
+    }
+
+    public boolean deleteItem(Long id) {
+        // First delete all associated images
+        imageDao.deleteByItemId(id);
+        // Then delete the item
+        return itemDao.delete(id);
+    }
+
 }

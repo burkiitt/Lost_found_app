@@ -32,7 +32,12 @@
     </label>
     <br />
 
-    <input type="submit" value="Send" />
+    <div class="button-group">
+        <input type="submit" value="Send" />
+        <a href="${pageContext.request.contextPath}/login">
+            <button type="button">Back to Login</button>
+        </a>
+    </div>
 
     <c:if test="${not empty errors}">
         <div class="error-message">

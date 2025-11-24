@@ -26,6 +26,7 @@ public class ImageDao {
             """;
 
     private final String DELETE_SQL = "DELETE FROM images WHERE id = ?";
+    private final String DELETE_BY_ITEM_ID_SQL = "DELETE FROM images WHERE item_id = ?";
 
     public Image save(Image image) {
         try (Connection connection = ConnectionManager.get();
@@ -87,6 +88,17 @@ public class ImageDao {
         ) {
             statement.setLong(1, id);
             return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean deleteByItemId(Long itemId) {
+        try (Connection connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(DELETE_BY_ITEM_ID_SQL)
+        ) {
+            statement.setLong(1, itemId);
+            return statement.executeUpdate() >= 0; // >= 0 because there might be no images
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

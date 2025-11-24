@@ -35,6 +35,9 @@ public class ItemDao {
             set category_id=?,type=?,title=?,description=?,location=?,event_date=?,status=?
             where id=?;
             """;
+    String Find_Items_By_UserId = findAll_SQL+"""
+            where user_id=?
+            """;
     public Item save (Item item) {
         try(Connection connection = ConnectionManager.get();
             var statement = connection.prepareStatement(save_SQL,Statement.RETURN_GENERATED_KEYS);
@@ -204,5 +207,22 @@ public class ItemDao {
         }
 
         return items;
+    }
+    public  List<Item> itemsByUserId(Long userId) {
+        try(
+                Connection connection = ConnectionManager.get();
+                var statement = connection.prepareStatement(Find_Items_By_UserId);
+                ){
+            statement.setLong(1,userId);
+            ResultSet rs = statement.executeQuery();
+            List<Item> items = new ArrayList<>();
+            while(rs.next()) {
+                items.add(buildItem(rs));
+            }
+            return items;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

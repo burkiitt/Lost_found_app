@@ -8,48 +8,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Список вещей - Lost&Found</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/items.css">
+    <title>Мои публикации - Lost&Found</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/publications.css">
 </head>
 <body>
 <!-- Header -->
 <header>
     <h1>Lost&Found</h1>
     <div class="header-links">
-        <a href="${pageContext.request.contextPath}/publications">мои поблукации</a>
+        <a href="${pageContext.request.contextPath}/items">Все вещи</a>
         <a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
         <a href="${pageContext.request.contextPath}/addItem">Добавить вещь</a>
     </div>
 </header>
 
-<!-- Search bar -->
-<form class="search-bar" method="get" action="SearchItemsServlet">
-    <input type="text" name="name" placeholder="Введите имя вещи"/>
+<!-- Publications list -->
+<h2 style="text-align: center; color: white; margin: 20px 0; font-size: 28px;">Мои публикации</h2>
 
-    <label>Category:</label>
-    <select name="category_name">
-        <option value="">Все категории</option>
-        <c:forEach var="cat" items="${categories}">
-            <option value="${cat}">${cat}</option>
-        </c:forEach>
-    </select>
-
-    <select name="type">
-        <option value="">Все типы</option>
-        <option value="lost">Lost</option>
-        <option value="found">Found</option>
-    </select>
-
-    <input type="date" name="dateFrom"/>
-    <input type="date" name="dateTo"/>
-    <input type="submit" value="Поиск"/>
-</form>
-
-<!-- Items list -->
 <ul>
     <%
-        List<ItemDto> items = (List<ItemDto>) request.getAttribute("items");
-        if (items != null) {
+        List<ItemDto> items = (List<ItemDto>) request.getAttribute("itemList");
+        if (items != null && !items.isEmpty()) {
             for (ItemDto item : items) {
     %>
     <li class="item-card">
@@ -68,9 +47,21 @@
                 %>
             </div>
         </a>
+        <form method="post" action="<%= request.getContextPath() %>/publications">
+            <input type="hidden" name="itemId" value="<%= item.id() %>">
+            <button type="submit">Delete</button>
+        </form>
     </li>
     <%
             }
+        } else {
+    %>
+    <div class="empty-state">
+        <h2>У вас пока нет публикаций</h2>
+        <p>Начните добавлять вещи, чтобы они появились здесь</p>
+        <a href="${pageContext.request.contextPath}/addItem" style="color: white; text-decoration: underline; margin-top: 20px; display: inline-block;">Добавить вещь</a>
+    </div>
+    <%
         }
     %>
 </ul>

@@ -10,6 +10,7 @@
     <h1>Lost&Found</h1>
     <div class="header-links">
         <a href="${pageContext.request.contextPath}/items">Все вещи</a>
+        <a href="${pageContext.request.contextPath}/publications">мои поблукации</a>
         <a href="${pageContext.request.contextPath}/addItem">Добавить вещь</a>
     </div>
 </header>
