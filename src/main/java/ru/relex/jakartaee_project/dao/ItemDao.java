@@ -225,4 +225,36 @@ public class ItemDao {
         }
 
     }
+
+    /**
+     * Find items by IDs (used for semantic search results)
+     */
+    public List<Item> findByIds(List<Long> itemIds) {
+        if (itemIds == null || itemIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        StringBuilder sql = new StringBuilder(findAll_SQL);
+        sql.append(" WHERE id IN (");
+        for (int i = 0; i < itemIds.size(); i++) {
+            if (i > 0) sql.append(",");
+            sql.append("?");
+        }
+        sql.append(")");
+
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < itemIds.size(); i++) {
+                ps.setLong(i + 1, itemIds.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            List<Item> items = new ArrayList<>();
+            while (rs.next()) {
+                items.add(buildItem(rs));
+            }
+            return items;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
