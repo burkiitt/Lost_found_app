@@ -11,7 +11,7 @@ import java.util.List;
  * Utility class to generate embeddings for existing items in the database
  * Run this once to populate embeddings for all existing items
  */
-public class EmbeddingGenerator {
+/*public class EmbeddingGenerator {
     
     public static void main(String[] args) {
         System.out.println("Starting embedding generation for existing items...");
@@ -62,7 +62,11 @@ public class EmbeddingGenerator {
         System.out.println("Failed: " + failCount);
         System.out.println("Total: " + items.size());
     }
-}
+}*/
+
+
+
+
 
 
 

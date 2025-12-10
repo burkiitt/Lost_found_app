@@ -12,3 +12,7 @@ WHERE table_name = 'items' AND column_name = 'description_embedding';
 
 
 
+
+
+
+

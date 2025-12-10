@@ -1,154 +1,89 @@
 package ru.relex.jakartaee_project.dao;
 
+import com.google.gson.Gson;
 import ru.relex.jakartaee_project.utils.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DAO for managing item embeddings in the database
- */
 public class EmbeddingDao {
-    private static final EmbeddingDao instance = new EmbeddingDao();
 
-    private EmbeddingDao() {}
+    private final Gson gson = new Gson();
 
-    public static EmbeddingDao getInstance() {
-        return instance;
-    }
+    public void saveEmbedding(int itemId, float[] embedding) throws SQLException {
+        String sql = "INSERT INTO item_embeddings (item_id, embedding) VALUES (?, ?::json)";
 
-    /**
-     * Save or update embedding for an item
-     * Creates embedding column if it doesn't exist
-     */
-    public boolean saveEmbedding(Long itemId, String embeddingStr) {
-        try (Connection connection = ConnectionManager.get()) {
-            // Check if embedding column exists, if not create it
-            ensureEmbeddingColumnExists(connection);
+        try (Connection conn = ConnectionManager.get();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            String sql = """
-                UPDATE items 
-                SET description_embedding = ? 
-                WHERE id = ?
-                """;
-
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                ps.setString(1, embeddingStr);
-                ps.setLong(2, itemId);
-                return ps.executeUpdate() > 0;
-            }
-        } catch (SQLException e) {
-            System.err.println("Error saving embedding: " + e.getMessage());
-            return false;
+            ps.setInt(1, itemId);
+            ps.setString(2, gson.toJson(embedding));
+            ps.executeUpdate();
         }
     }
 
-    /**
-     * Get embedding for an item
-     */
-    public String getEmbedding(Long itemId) {
-        try (Connection connection = ConnectionManager.get()) {
-            ensureEmbeddingColumnExists(connection);
+    public List<float[]> getAllEmbeddings() throws SQLException {
+        String sql = "SELECT embedding FROM item_embeddings";
 
-            String sql = """
-                SELECT description_embedding 
-                FROM items 
-                WHERE id = ?
-                """;
+        List<float[]> list = new ArrayList<>();
 
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                ps.setLong(1, itemId);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    return rs.getString("description_embedding");
-                }
+        try (Connection conn = ConnectionManager.get();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                String json = rs.getString("embedding");
+                float[] vector = gson.fromJson(json, float[].class);
+                list.add(vector);
             }
-        } catch (SQLException e) {
-            System.err.println("Error getting embedding: " + e.getMessage());
         }
-        return null;
+
+        return list;
     }
 
     /**
-     * Get all items with their embeddings for similarity search
+     * Get all embeddings with their item IDs
+     * Returns a list of ItemEmbedding objects containing item_id and embedding vector
      */
-    public List<ItemEmbedding> getAllEmbeddings() {
-        List<ItemEmbedding> embeddings = new ArrayList<>();
-        try (Connection connection = ConnectionManager.get()) {
-            ensureEmbeddingColumnExists(connection);
+    public List<ItemEmbedding> getAllEmbeddingsWithItemIds() throws SQLException {
+        String sql = "SELECT item_id, embedding FROM item_embeddings";
 
-            String sql = """
-                SELECT id, description_embedding 
-                FROM items 
-                WHERE description_embedding IS NOT NULL
-                """;
+        List<ItemEmbedding> list = new ArrayList<>();
 
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    Long id = rs.getLong("id");
-                    String embeddingStr = rs.getString("description_embedding");
-                    if (embeddingStr != null && !embeddingStr.isEmpty()) {
-                        embeddings.add(new ItemEmbedding(id, embeddingStr));
-                    }
-                }
+        try (Connection conn = ConnectionManager.get();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                int itemId = rs.getInt("item_id");
+                String json = rs.getString("embedding");
+                float[] vector = gson.fromJson(json, float[].class);
+                list.add(new ItemEmbedding(itemId, vector));
             }
-        } catch (SQLException e) {
-            System.err.println("Error getting all embeddings: " + e.getMessage());
         }
-        return embeddings;
+
+        return list;
     }
 
     /**
-     * Ensure the embedding column exists in the items table
-     */
-    private void ensureEmbeddingColumnExists(Connection connection) throws SQLException {
-        try {
-            // Check if column exists
-            DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet columns = metaData.getColumns(null, null, "items", "description_embedding");
-            if (!columns.next()) {
-                // Column doesn't exist, create it
-                try (Statement stmt = connection.createStatement()) {
-                    stmt.execute("""
-                        ALTER TABLE items 
-                        ADD COLUMN IF NOT EXISTS description_embedding TEXT
-                        """);
-                }
-            }
-        } catch (SQLException e) {
-            // Column might already exist or table doesn't exist
-            // Try to create it anyway
-            try (Statement stmt = connection.createStatement()) {
-                stmt.execute("""
-                    ALTER TABLE items 
-                    ADD COLUMN IF NOT EXISTS description_embedding TEXT
-                    """);
-            } catch (SQLException e2) {
-                // Ignore if column already exists
-            }
-        }
-    }
-
-    /**
-     * Inner class to hold item ID and embedding
+     * Inner class to hold item_id and embedding together
      */
     public static class ItemEmbedding {
-        private final Long itemId;
-        private final String embeddingStr;
+        private final int itemId;
+        private final float[] embedding;
 
-        public ItemEmbedding(Long itemId, String embeddingStr) {
+        public ItemEmbedding(int itemId, float[] embedding) {
             this.itemId = itemId;
-            this.embeddingStr = embeddingStr;
+            this.embedding = embedding;
         }
 
-        public Long getItemId() {
+        public int getItemId() {
             return itemId;
         }
 
-        public String getEmbeddingStr() {
-            return embeddingStr;
+        public float[] getEmbedding() {
+            return embedding;
         }
     }
 }

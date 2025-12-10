@@ -16,9 +16,13 @@
 <header>
     <h1>Lost&Found</h1>
     <div class="header-links">
+        <a href="${pageContext.request.contextPath}/items">Главная</a>
         <a href="${pageContext.request.contextPath}/publications">мои поблукации</a>
-        <a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
         <a href="${pageContext.request.contextPath}/addItem">Добавить вещь</a>
+        <a href="${pageContext.request.contextPath}/searchByImage">Поиск по изображению</a>
+        <a href="${pageContext.request.contextPath}/profile">Личный кабинет</a>
+
+
     </div>
 </header>
 

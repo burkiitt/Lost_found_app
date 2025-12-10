@@ -8,12 +8,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import ru.relex.jakartaee_project.dao.CategoryDao;
+import ru.relex.jakartaee_project.dao.EmbeddingDao;
 import ru.relex.jakartaee_project.service.CategoryService;
 import ru.relex.jakartaee_project.service.ImageService;
 import ru.relex.jakartaee_project.service.ItemService;
+import ru.relex.jakartaee_project.service.ai.ClipClient;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +32,8 @@ public class AddItemServlet extends HttpServlet {
     private final ItemService itemService = ItemService.getInstance();
     private final CategoryService categoryService = CategoryService.getInstance();
     private final ImageService imageService = ImageService.getInstance();
-
+    private final ClipClient clipClient = new ClipClient();
+    private final EmbeddingDao embeddingDao = new EmbeddingDao();
 
     private final CategoryDao categoryDao = CategoryDao.getInstance();
 
@@ -47,6 +52,33 @@ public class AddItemServlet extends HttpServlet {
         String submitted = part.getSubmittedFileName();
         int dotIndex = submitted.lastIndexOf('.');
         return (dotIndex == -1) ? "" : submitted.substring(dotIndex);
+    }
+
+    /**
+     * Generate and save embedding for an uploaded image
+     * Runs asynchronously to avoid blocking the response
+     */
+    private void generateAndSaveEmbeddingAsync(long itemId, File imageFile) {
+        new Thread(() -> {
+            try {
+                // Read image file
+                byte[] imageBytes;
+                try (FileInputStream fis = new FileInputStream(imageFile)) {
+                    imageBytes = fis.readAllBytes();
+                }
+
+                // Generate embedding using CLIP
+                float[] embedding = clipClient.getImageEmbedding(imageBytes);
+
+                // Save to database
+                embeddingDao.saveEmbedding((int) itemId, embedding);
+                
+                System.out.println("Successfully saved embedding for item " + itemId);
+            } catch (Exception e) {
+                System.err.println("Error generating embedding for item " + itemId + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     @Override
@@ -95,6 +127,7 @@ public class AddItemServlet extends HttpServlet {
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
         int counter = 1;
+        boolean firstImage = true;
         for (Part part : images) {
 
             String ext = getExtension(part);  // .jpg / .png / .jpeg
@@ -105,6 +138,12 @@ public class AddItemServlet extends HttpServlet {
 
             // image_url = only filename
             imageService.saveImage(itemId, filename);
+
+            // Generate and save embedding for the first image (asynchronously to avoid blocking)
+            if (firstImage) {
+                firstImage = false;
+                generateAndSaveEmbeddingAsync(itemId, file);
+            }
 
             counter++;
         }
